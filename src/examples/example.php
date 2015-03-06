@@ -17,3 +17,14 @@ echo 'Domain ID: ' . $whois->getId() . PHP_EOL;
 echo 'Allow transfers: '; echo $whois->allowTransfers() ? 'Yes' : 'No'; echo PHP_EOL;
 
 echo 'DNS: ' . implode(', ', $whois->getDns()) . PHP_EOL;
+
+$contacts = array(
+    'Registrant' => $whois->getRegistrant(),
+    'Admin' => $whois->getRegistrant(),
+    'Tech' => $whois->getRegistrant(),
+);
+foreach ($contacts as $type => $contact) {
+    foreach (get_object_vars($contact) as $name => $value) {
+        echo $type . ' ' . $name . ': ' . $value . PHP_EOL;
+    }
+}

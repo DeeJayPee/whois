@@ -2,6 +2,8 @@
 
 namespace Arall;
 
+use Arall\Whois\Contact;
+
 class Whois
 {
 
@@ -13,13 +15,6 @@ class Whois
     private $domain;
 
     /**
-     * Domain TLD
-     *
-     * @var string
-     */
-    private $tld;
-
-    /**
      * Whois plain text result
      *
      * @var string
@@ -27,21 +22,11 @@ class Whois
     private $result;
 
     /**
-     * Whois resolvers servers
+     * Whois resolver server
      *
-     * @var array
+     * @var string
      */
-    private $servers = array(
-        'com'       => 'whois.verisign-grs.com',
-        'net'       => 'whois.verisign-grs.com',
-        'org'       => 'whois.publicinterestregistry.net',
-        'info'      => 'whois.afilias.info',
-        'biz'       => 'whois.biz',
-        'uk'        => 'whois.nic.uk',
-        'ca'        => 'whois.cira.ca',
-        'au'        => 'whois.audns.net.au',
-        '*'         => 'whois-servers.net',
-    );
+    private $server = 'whois.domain.com';
 
     /**
 	 * Construct
@@ -56,10 +41,6 @@ class Whois
 
             // Store
             $this->domain = $domain;
-
-            // TLD
-            $parts = explode(".", $this->domain);
-            $this->tld = strtolower(array_pop($parts));
 
             // Run
             $this->execute();
@@ -82,23 +63,19 @@ class Whois
         try {
 
             // Connect
-            try {
-                $server = isset($this->servers[$this->tld]) ? $this->servers[$this->tld] : $this->tld . '.' . $this->servers['*'];
-                $connection = fsockopen($server, 43);
-            } catch (\Exception $e) {
-                return false;
+            if ($connection = fsockopen($this->server, 43)) {
+
+                // Query
+                fputs($connection, $this->domain."\r\n");
+
+                // Store response
+                $this->result = '';
+                while (!feof($connection)) {
+                    $this->result .= fgets($connection);
+                }
+
+                return true;
             }
-
-            // Query
-            fputs($connection, $this->domain."\r\n");
-
-            // Store response
-            $this->result = '';
-            while (!feof($connection)) {
-                $this->result .= fgets($connection);
-            }
-
-            return true;
 
         } catch (ResolveErrorException $e) {
             return false;
@@ -122,7 +99,7 @@ class Whois
      */
     public function getUpdateDate()
     {
-        return $this->parseDate($this->parseText('(update|updated) date', 2));
+        return $this->parseDate($this->parseText('(updated|update) date', 2));
     }
 
     /**
@@ -176,6 +153,36 @@ class Whois
     }
 
     /**
+     * Get domain Registrant contact
+     *
+     * @return Arall\Whois\Contact
+     */
+    public function getRegistrant()
+    {
+        return $this->parseContact('registrant');
+    }
+
+    /**
+     * Get domain Admin contact
+     *
+     * @return Arall\Whois\Contact
+     */
+    public function getAdmin()
+    {
+        return $this->parseContact('admin');
+    }
+
+    /**
+     * Get domain Tech contact
+     *
+     * @return Arall\Whois\Contact
+     */
+    public function getTech()
+    {
+        return $this->parseContact('tech');
+    }
+
+    /**
      * Search text on result
      *
      * @param  string       $text
@@ -184,7 +191,7 @@ class Whois
      */
     private function parseText($text, $index = null)
     {
-        $regex = '/'.$text.': ?(.*)\r/i';
+        $regex = '/'.$text.': ?(.*)/i';
 
         // All results?
         if ($index === null) {
@@ -200,8 +207,33 @@ class Whois
         } else {
             preg_match($regex, $this->result, $matches);
 
-            return isset($matches[$index]) ? $matches[$index] : null;
+            return isset($matches[$index]) ? trim($matches[$index]) : null;
         }
+    }
+
+    /**
+     * Get contact
+     *
+     * @param  string              $type [Registrant | Admin | Tech]
+     * @return Arall\Whois\Contact
+     */
+    public function parseContact($type)
+    {
+        $contact = new Contact();
+
+        $contact->name          = $this->parseText($type . ' name',             1);
+        $contact->organization  = $this->parseText($type . ' organization',     1);
+        $contact->city          = $this->parseText($type . ' city',             1);
+        $contact->state         = $this->parseText($type . ' state\/province',  1);
+        $contact->postalCode    = $this->parseText($type . ' postal code',      1);
+        $contact->country       = $this->parseText($type . ' country',          1);
+        $contact->phone         = $this->parseText($type . ' phone',            1);
+        $contact->phoneExt      = $this->parseText($type . ' phone ext',        1);
+        $contact->fax           = $this->parseText($type . ' fax',              1);
+        $contact->faxExt        = $this->parseText($type . ' fax ext',          1);
+        $contact->email         = $this->parseText($type . ' email',            1);
+
+        return $contact;
     }
 
     /**

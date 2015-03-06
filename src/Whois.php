@@ -85,7 +85,7 @@ class Whois
             try {
                 $server = isset($this->servers[$this->tld]) ? $this->servers[$this->tld] : $this->tld . '.' . $this->servers['*'];
                 $connection = fsockopen($server, 43);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return false;
             }
 
@@ -108,7 +108,7 @@ class Whois
     /**
      * Get domain creation date
      *
-     * @return string|bool
+     * @return string
      */
     public function getCreationDate()
     {
@@ -118,7 +118,7 @@ class Whois
     /**
      * Get domain update date
      *
-     * @return string|bool
+     * @return string
      */
     public function getUpdateDate()
     {
@@ -128,7 +128,7 @@ class Whois
     /**
      * Get domain expiration date
      *
-     * @return string|bool
+     * @return string
      */
     public function getExpirationDate()
     {
@@ -168,26 +168,26 @@ class Whois
     /**
      * Search text on result
      *
-     * @param  string       $text
-     * @param  integer      $index Match index
-     * @return string|false
+     * @param  string  $text
+     * @param  integer $index Match index
+     * @return string
      */
     private function parseText($text, $index = 1)
     {
         preg_match('/'.$text.': ?(.*)/i', $this->result, $match);
 
-        return isset($match[$index]) ? trim(preg_replace('/\s+/', ' ', $match[$index])) : false;
+        return isset($match[$index]) ? trim(preg_replace('/\s+/', ' ', $match[$index])) : null;
     }
 
     /**
      * Parse date to Y-m-d H:i:s format
      *
-     * @param  string      $date
-     * @return string|bool
+     * @param  string $date
+     * @return string
      */
     private function parseDate($date)
     {
-        return $date ? date('Y-m-d H:i:s', strtotime($date)) : false;
+        return $date ? date('Y-m-d H:i:s', strtotime($date)) : null;
     }
 
 }

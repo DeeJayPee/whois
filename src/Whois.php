@@ -31,8 +31,8 @@ class Whois
     /**
 	 * Construct
      *
+     * @param  string                   $domain Domain name
      * @throws InvalidArgumentException If the domain is not valid
-	 * @param string $domain Domain name
 	 */
     public function __construct($domain)
     {
@@ -43,43 +43,35 @@ class Whois
             $this->domain = $domain;
 
             // Run
-            $this->execute();
+            return $this->execute();
         }
 
-        // Invalid domain
-        if (!$this->domain) {
-            throw new \InvalidArgumentException('Invalid domain');
-        }
+        throw new \InvalidArgumentException('Invalid domain');
     }
 
     /**
      * Query DNS server
      *
-     * @throws ResolveErrorException If the resver doesn't response
      * @return bool
      */
     private function execute()
     {
-        try {
+        // Connect
+        if ($connection = fsockopen($this->server, 43)) {
 
-            // Connect
-            if ($connection = fsockopen($this->server, 43)) {
+            // Query
+            fputs($connection, $this->domain."\r\n");
 
-                // Query
-                fputs($connection, $this->domain."\r\n");
-
-                // Store response
-                $this->result = '';
-                while (!feof($connection)) {
-                    $this->result .= fgets($connection);
-                }
-
-                return true;
+            // Store response
+            $this->result = '';
+            while (!feof($connection)) {
+                $this->result .= fgets($connection);
             }
 
-        } catch (ResolveErrorException $e) {
-            return false;
+            return true;
         }
+
+        return false;
     }
 
     /**

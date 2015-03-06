@@ -26,5 +26,6 @@ class WhoisTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Gandi SAS (R42-LROR)', $whois->getRegistrar());
         $this->assertEquals('D2234962-LROR', $whois->getId());
         $this->assertFalse($whois->allowTransfers());
+        $this->assertEquals(array('NS1.EFF.ORG', 'NS2.EFF.ORG', 'NS6.EFF.ORG'), $whois->getDns());
     }
 }

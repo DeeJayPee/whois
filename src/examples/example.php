@@ -14,4 +14,6 @@ echo 'Registrar: ' . $whois->getRegistrar() . PHP_EOL;
 
 echo 'Domain ID: ' . $whois->getId() . PHP_EOL;
 
-echo 'Allow transfers: '; echo $whois->allowTransfers() ? 'Yes' : 'No' . PHP_EOL;
+echo 'Allow transfers: '; echo $whois->allowTransfers() ? 'Yes' : 'No'; echo PHP_EOL;
+
+echo 'DNS: ' . implode(', ', $whois->getDns()) . PHP_EOL;

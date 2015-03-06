@@ -112,7 +112,7 @@ class Whois
      */
     public function getCreationDate()
     {
-        return $this->parseDate($this->parseText('creation date'));
+        return $this->parseDate($this->parseText('creation date', 1));
     }
 
     /**
@@ -142,7 +142,7 @@ class Whois
      */
     public function getRegistrar()
     {
-        return $this->parseText('registrar');
+        return $this->parseText('registrar', 1);
     }
 
     /**
@@ -152,7 +152,7 @@ class Whois
      */
     public function getId()
     {
-        return $this->parseText('domain id');
+        return $this->parseText('domain id', 1);
     }
 
     /**
@@ -166,17 +166,42 @@ class Whois
     }
 
     /**
+     * Get domain DNS records
+     *
+     * @return array
+     */
+    public function getDns()
+    {
+        return $this->parseText('name server');
+    }
+
+    /**
      * Search text on result
      *
-     * @param  string  $text
-     * @param  integer $index Match index
-     * @return string
+     * @param  string       $text
+     * @param  integer      $index Match index
+     * @return string|array
      */
-    private function parseText($text, $index = 1)
+    private function parseText($text, $index = null)
     {
-        preg_match('/'.$text.': ?(.*)/i', $this->result, $match);
+        $regex = '/'.$text.': ?(.*)\r/i';
 
-        return isset($match[$index]) ? trim(preg_replace('/\s+/', ' ', $match[$index])) : null;
+        // All results?
+        if ($index === null) {
+            preg_match_all($regex, $this->result, $matches);
+
+            // Clean empty matches
+            $matches = array_map('trim', $matches[1]);
+            $matches = array_filter($matches);
+
+            return isset($matches) ? $matches : null;
+
+        // Result index?
+        } else {
+            preg_match($regex, $this->result, $matches);
+
+            return isset($matches[$index]) ? $matches[$index] : null;
+        }
     }
 
     /**

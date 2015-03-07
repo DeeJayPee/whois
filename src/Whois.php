@@ -43,10 +43,13 @@ class Whois
             $this->domain = $domain;
 
             // Run
-            return $this->execute();
-        }
+            $this->execute();
 
-        throw new \InvalidArgumentException('Invalid domain');
+        } else {
+
+            // Invalid domain
+            throw new \InvalidArgumentException('Invalid domain');
+        }
     }
 
     /**

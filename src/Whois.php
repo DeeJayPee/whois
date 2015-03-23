@@ -2,8 +2,6 @@
 
 namespace Arall;
 
-use Arall\Whois\Contact;
-
 class Whois
 {
 
@@ -150,7 +148,7 @@ class Whois
     /**
      * Get domain Registrant contact
      *
-     * @return Arall\Whois\Contact
+     * @return stdClass
      */
     public function getRegistrant()
     {
@@ -160,7 +158,7 @@ class Whois
     /**
      * Get domain Admin contact
      *
-     * @return Arall\Whois\Contact
+     * @return stdClass
      */
     public function getAdmin()
     {
@@ -170,7 +168,7 @@ class Whois
     /**
      * Get domain Tech contact
      *
-     * @return Arall\Whois\Contact
+     * @return stdClass
      */
     public function getTech()
     {
@@ -209,12 +207,12 @@ class Whois
     /**
      * Get contact
      *
-     * @param  string              $type [Registrant | Admin | Tech]
-     * @return Arall\Whois\Contact
+     * @param  string   $type [Registrant | Admin | Tech]
+     * @return stdClass
      */
     public function parseContact($type)
     {
-        $contact = new Contact();
+        $contact = new \stdClass();
 
         $contact->name          = $this->parseText($type . ' name',             1);
         $contact->organization  = $this->parseText($type . ' organization',     1);

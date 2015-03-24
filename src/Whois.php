@@ -148,31 +148,34 @@ class Whois
     /**
      * Get domain Registrant contact
      *
+     * @param  object   $contact
      * @return stdClass
      */
-    public function getRegistrant()
+    public function getRegistrant(&$contact = null)
     {
-        return $this->parseContact('registrant');
+        return $this->parseContact('registrant', $contact);
     }
 
     /**
      * Get domain Admin contact
      *
+     * @param  object   $contact
      * @return stdClass
      */
-    public function getAdmin()
+    public function getAdmin(&$contact = null)
     {
-        return $this->parseContact('admin');
+        return $this->parseContact('admin', $contact);
     }
 
     /**
      * Get domain Tech contact
      *
+     * @param  object   $contact
      * @return stdClass
      */
-    public function getTech()
+    public function getTech(&$contact = null)
     {
-        return $this->parseContact('tech');
+        return $this->parseContact('tech', $contact);
     }
 
     /**

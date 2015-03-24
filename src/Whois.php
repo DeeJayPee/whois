@@ -224,12 +224,12 @@ class Whois
         $contact->organization  = $this->parseText($type . ' organization',     1);
         $contact->city          = $this->parseText($type . ' city',             1);
         $contact->state         = $this->parseText($type . ' state\/province',  1);
-        $contact->postalCode    = $this->parseText($type . ' postal code',      1);
+        $contact->postal_code   = $this->parseText($type . ' postal code',      1);
         $contact->country       = $this->parseText($type . ' country',          1);
         $contact->phone         = $this->parseText($type . ' phone',            1);
-        $contact->phoneExt      = $this->parseText($type . ' phone ext',        1);
+        $contact->phone_ext     = $this->parseText($type . ' phone ext',        1);
         $contact->fax           = $this->parseText($type . ' fax',              1);
-        $contact->faxExt        = $this->parseText($type . ' fax ext',          1);
+        $contact->fax_ext       = $this->parseText($type . ' fax ext',          1);
         $contact->email         = $this->parseText($type . ' email',            1);
 
         return $contact;

@@ -34,21 +34,21 @@ class WhoisTest extends PHPUnit_Framework_TestCase
         $contact->organization = 'Electronic Frontier Foundation';
         $contact->city         = 'San Francisco';
         $contact->state        = null;
-        $contact->postalCode   = '94110';
+        $contact->postal_code  = '94110';
         $contact->country      = 'US';
         $contact->phone        = '+1.4154369333';
-        $contact->phoneExt     = null;
+        $contact->phone_ext    = null;
         $contact->fax          = null;
-        $contact->faxExt       = null;
+        $contact->fax_ext      = null;
         $contact->email        = 'whois@eff.org';
 
         $this->assertEquals($contact, $whois->getRegistrant());
 
         // Admin
-        $contact->name       = 'System Administrator';
-        $contact->state      = 'CA';
-        $contact->postalCode = '94109';
-        $contact->fax        = '+33.1';
+        $contact->name        = 'System Administrator';
+        $contact->state       = 'CA';
+        $contact->postal_code = '94109';
+        $contact->fax         = '+33.1';
 
         $this->assertEquals($contact, $whois->getAdmin());
 
@@ -57,12 +57,12 @@ class WhoisTest extends PHPUnit_Framework_TestCase
         $contact->organization = 'GANDI SARL';
         $contact->city         = 'Paris';
         $contact->state        = '';
-        $contact->postalCode   = '75013';
+        $contact->postal_code  = '75013';
         $contact->country      = 'FR';
         $contact->phone        = '+33.143737851';
-        $contact->phoneExt     = '';
+        $contact->phone_ext    = '';
         $contact->fax          = '';
-        $contact->faxExt       = null;
+        $contact->fax_ext      = null;
         $contact->email        = 'support@gandi.net';
 
         $this->assertEquals($contact, $whois->getTech());

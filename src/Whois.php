@@ -207,12 +207,15 @@ class Whois
     /**
      * Get contact
      *
-     * @param  string   $type [Registrant | Admin | Tech]
+     * @param  string   $type    [Registrant | Admin | Tech]
+     * @param  object   $contact
      * @return stdClass
      */
-    public function parseContact($type)
+    public function parseContact($type, &$contact = null)
     {
-        $contact = new \stdClass();
+        if (!$contact) {
+            $contact = new \stdClass();
+        }
 
         $contact->name          = $this->parseText($type . ' name',             1);
         $contact->organization  = $this->parseText($type . ' organization',     1);

@@ -1,6 +1,7 @@
 <?php
 
 namespace Arall;
+use Purl\Url;
 
 class Whois
 {
@@ -20,7 +21,7 @@ class Whois
     private $result;
 
     /**
-     * Whois resolver server
+     * Whois resolver servers
      *
      * @var string
      */
@@ -30,24 +31,50 @@ class Whois
 	 * Construct
      *
      * @param  string                   $domain Domain name
-     * @throws InvalidArgumentException If the domain is not valid
+     * @throws InvalidArgumentException If the domain is not valid or the servers.lst file's not found
 	 */
     public function __construct($domain)
     {
         // Is valid?
         if (preg_match("/^([-a-z0-9]{2,100})\.([a-z\.]{2,8})$/i", $domain)) {
-
             // Store
             $this->domain = $domain;
-
-            // Run
-            $this->execute();
+            $url = new \Purl\Url($domain);
 
         } else {
 
             // Invalid domain
             throw new \InvalidArgumentException('Invalid domain');
         }
+
+        // Get Server List
+        try
+		{
+        	$servers = explode("\n", file_get_contents( __DIR__.'/Whois/servers.lst'));
+       	}
+  		catch (Exception $e)
+  		{
+       		throw new \InvalidArgumentException('Unable to open Whois/servers.lst : '.$e);
+		}
+
+        foreach ($servers as $server)
+		{
+			if (!(preg_match('#^;\s#', $server)))
+			{
+				list ($gtld, $whois) = explode(" ", $server);
+
+				if ($url->publicSuffix == $gtld)
+				{
+					$this->server = trim($whois);
+					break;
+				}
+			}
+       	}
+       	if (!$this->server)
+       		throw new \InvalidArgumentException('No whois server in servers.lst for '.$url->publicSuffix);
+
+   		// Run
+        $this->execute();
     }
 
     /**
